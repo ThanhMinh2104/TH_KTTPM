@@ -1,2 +1,6 @@
-package com.example.state_decorator_strategy;public class OrderService {
+package com.example.state_decorator_strategy;
+
+public interface OrderService {
+    void process();
 }
+
