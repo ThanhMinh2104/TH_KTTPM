@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # ──────────────────────────────────────────────
+  # Service 1: PostgreSQL (pull image + insert data)
+  # Đây chính là flow: pull image postgres --> run container --> insert data
+  # ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine          # Pull image từ Docker Hub
+    container_name: demo_postgres
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data   # Lưu data kể cả khi restart
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Auto chạy khi khởi tạo
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ──────────────────────────────────────────────
+  # Service 2: Node.js App (multi-stage build)
+  # ──────────────────────────────────────────────
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: demo_app
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: mydb
+      DB_USER: postgres
+      DB_PASSWORD: password
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy   # Chờ postgres sẵn sàng mới start app
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
