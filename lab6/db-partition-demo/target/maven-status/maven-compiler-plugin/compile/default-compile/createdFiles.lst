@@ -1,0 +1,8 @@
+com\example\dbpartition\controller\UserController.class
+com\example\dbpartition\DbPartitionDemoApplication.class
+com\example\dbpartition\entity\User.class
+com\example\dbpartition\config\DataSourceConfig.class
+com\example\dbpartition\config\UserRoutingDataSource.class
+com\example\dbpartition\repository\UserRepository.class
+com\example\dbpartition\service\UserService.class
+com\example\dbpartition\config\DataLoader.class
